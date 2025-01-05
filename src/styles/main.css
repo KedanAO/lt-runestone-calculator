@@ -1,0 +1,17 @@
+body {
+  font-family: sans-serif;
+}
+
+#tooltip {
+  position: absolute;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+
+  background-color: white;
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding: 2px;
+
+  white-space: pre;
+}

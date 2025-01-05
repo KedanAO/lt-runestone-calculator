@@ -78,13 +78,13 @@ export default {
         <div class="single-rune"
           @click="toggleRune(rune['num']-1)"
           :style="{left: 37 + (rune['num']-1) % 5 * 68 + 'px', top: 81 + Math.floor((rune['num']-1) / 5) * 68 + 'px', position: 'absolute'}">
-          <img v-if="runeStates[rune['num']-1] && rune['num'] <= 20" src="./assets/ActiveSlotEmpty.PNG" alt=""
+          <img v-if="runeStates[rune['num']-1] && rune['num'] <= 20" src="./assets/ActiveSlotEmpty.png" alt=""
           @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(rune)" 
           @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-          <img v-else-if="runeStates[rune['num']-1] && rune['num'] > 20" src="./assets/ActiveSlotEmpty2.PNG" alt=""
+          <img v-else-if="runeStates[rune['num']-1] && rune['num'] > 20" src="./assets/ActiveSlotEmpty2.png" alt=""
           @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(rune)" 
           @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-          <img v-else src="./assets/InactiveSlotInvisible.PNG" alt=""
+          <img v-else src="./assets/InactiveSlotInvisible.png" alt=""
           @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(rune)" 
           @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
         </div>

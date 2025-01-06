@@ -2,6 +2,10 @@ body {
   font-family: sans-serif;
 }
 
+td {
+  text-align: center;
+}
+
 .runes-stats {
   left: 430px;
   top: 320px;
@@ -20,6 +24,54 @@ body {
   color: darkmagenta;
 }
 
+.rune-selected-1 {
+  left: 540px;
+  top: 43px;
+  position: absolute;
+}
+
+.rune-selected-2 {
+  left: 465px;
+  top: 83px;
+  position: absolute;
+}
+
+.rune-selected-3 {
+  left: 615px;
+  top: 83px;
+  position: absolute;
+}
+
+.rune-selected-4 {
+  left: 450px;
+  top: 153px;
+  position: absolute;
+}
+
+.rune-selected-5 {
+  left: 630px;
+  top: 153px;
+  position: absolute;
+}
+
+.rune-selected-6 {
+  left: 495px;
+  top: 213px;
+  position: absolute;
+}
+
+.rune-selected-7 {
+  left: 585px;
+  top: 213px;
+  position: absolute;
+}
+
+.rune-selected-8 {
+  left: 540px;
+  top: 134px;
+  position: absolute;
+}
+
 .button-roll {
   position: absolute;
   left: 140px;
@@ -30,6 +82,30 @@ body {
 
   background-color: transparent;
   border-color: transparent;
+}
+
+.results {
+  width: 700px;
+  text-align: center;
+  margin: 10px;
+  margin-bottom: 30px;
+}
+
+.results-di {
+  font-size: x-large;
+}
+
+.results-rating {
+  font-size: xx-large;
+}
+
+.rune-table-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.rating-table {
+  padding-left: 150px;
 }
 
 #tooltip {

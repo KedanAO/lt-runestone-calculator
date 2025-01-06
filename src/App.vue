@@ -1,5 +1,6 @@
 <script>
 import runes from './utils/runes.js'
+import scrolls from './utils/scrolls.js'
 
 // todo: 
 // - Make main window (like in-game)
@@ -21,6 +22,7 @@ export default {
   data() {
     return {
       runes,
+      scrolls,
       runeStates: [
         false, false, false, false, false, false, false, false, false, false,
         false, false, false, false, false, false, false, false, false, false,
@@ -65,7 +67,7 @@ export default {
         while (r.includes(roll)) {
           roll = this.getRandomInt(30) + 1
         }
-        console.log(roll)
+
         r.push(roll)
       }
 
@@ -77,8 +79,19 @@ export default {
       }
     },
 
+    getScrollsNeeded(rating) {
+      if (rating >= 1) {
+        return 'Maxed!'
+      }
+      const n = scrolls[scrolls.indexOf(scrolls.find((s) => s[0] > rating))+1][1]
+      if (n === 'too many') {
+        return n
+      }
+      return n.toFixed(0) + ' (' + (n * 0.15).toFixed(2) + 'b Ely)'
+    },
+
     formatRunestoneTooltip(r){
-      return '<' + r['name'] + '>\n\n[Runestone of ' + r['name'].toUpperCase() + ']\n\n*Effects*\n' + r['stats'] + '\n\n*Damage Increase*\n- ' + r['value'] + '%'
+      return '<' + r['name'] + '>\n\n[Runestone of ' + r['name'].toUpperCase() + ']\n\n*Effects*\n' + r['stats'] + '\n\n*Damage Increase*\n- ' + r['value'].toFixed(5) + '%'
     },
 
     toggleRune(r) {
@@ -135,71 +148,19 @@ export default {
         </div>
       </div>
     </div>
-    <div class="runes-selected">
-      <img v-if="selectedRunes.length > 0" class="rune-selected-1" :src="imgUrls[`./assets/Rune${selectedRunes[0]}.png`]" alt=""
-        :style="{left: 540 + 'px', top: 43 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[0]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[0]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 1" class="rune-selected-2" :src="imgUrls[`./assets/Rune${selectedRunes[1]}.png`]" alt=""
-        :style="{left: 465 + 'px', top: 83 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[1]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[1]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 2" class="rune-selected-3" :src="imgUrls[`./assets/Rune${selectedRunes[2]}.png`]" alt=""
-        :style="{left: 615 + 'px', top: 83 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[2]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[2]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 3" class="rune-selected-4" :src="imgUrls[`./assets/Rune${selectedRunes[3]}.png`]" alt=""
-        :style="{left: 450 + 'px', top: 153 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[3]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[3]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 4" class="rune-selected-5" :src="imgUrls[`./assets/Rune${selectedRunes[4]}.png`]" alt=""
-        :style="{left: 630 + 'px', top: 153 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[4]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[4]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 5" class="rune-selected-6" :src="imgUrls[`./assets/Rune${selectedRunes[5]}.png`]" alt=""
-        :style="{left: 495 + 'px', top: 213 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[5]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[5]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 6" class="rune-selected-7" :src="imgUrls[`./assets/Rune${selectedRunes[6]}.png`]" alt=""
-        :style="{left: 585 + 'px', top: 213 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[6]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[6]-1])" 
-        @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
-      <img v-if="selectedRunes.length > 7" class="rune-selected-8" :src="imgUrls[`./assets/Rune${selectedRunes[7]}.png`]" alt=""
-        :style="{left: 540 + 'px', top: 134 + 'px', position: 'absolute'}"
-        @click="toggleRune(selectedRunes[7]-1)"
-        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[7]-1])" 
+    <div v-for="n in 8" class="runes-selected">
+      <img v-if="selectedRunes.length > n-1" :class="`rune-selected-` + n"
+        :src="imgUrls[`./assets/Rune${selectedRunes[n-1]}.png`]" alt=""
+        @click="toggleRune(selectedRunes[n-1]-1)"
+        @mouseenter="tooltip = true; tooltipText = formatRunestoneTooltip(runes[selectedRunes[n-1]-1])" 
         @mousemove.self="onMouseMove($event)" @mouseleave="tooltip=false">
     </div>
     <div class="runes-stats">
-      <div v-if="selectedRunes.length > 0" class="runes-stats-normal">
-        {{ runes[selectedRunes[0]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
+      <div v-for="n in 7" class="runes-stats-normal">
+        <div v-if="selectedRunes.length > n-1">
+          {{ runes[selectedRunes[n-1]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
+        </div>
       </div>
-      <div v-if="selectedRunes.length > 1" class="runes-stats-normal">
-        {{ runes[selectedRunes[1]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
-      </div>
-      <div v-if="selectedRunes.length > 2" class="runes-stats-normal">
-        {{ runes[selectedRunes[2]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
-      </div>
-      <div v-if="selectedRunes.length > 3" class="runes-stats-normal">
-        {{ runes[selectedRunes[3]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
-      </div>
-      <div v-if="selectedRunes.length > 4" class="runes-stats-normal">
-        {{ runes[selectedRunes[4]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
-      </div>
-      <div v-if="selectedRunes.length > 5" class="runes-stats-normal">
-        {{ runes[selectedRunes[5]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
-      </div>
-      <div v-if="selectedRunes.length > 6" class="runes-stats-normal">
-        {{ runes[selectedRunes[6]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
-      </div>
-
       <div v-if="selectedRunes.length > 7" class="runes-stats-last">
         (Double) {{ runes[selectedRunes[7]-1]['stats'].replace('- ', '').replace('\n- ', ' / ') }}
       </div>
@@ -207,14 +168,34 @@ export default {
     <button class="button-roll" @click="getRandomRunes()"></button>
   </div>
   <div class="side">
-    <div class="rune-table">
-      <div></div>
-      <div></div>
-    </div>
     <div class="results">
-      DI: {{ calculateValue() }}% / 10.361%
-      <br>
-      Rating: {{ (calculateValue() / 10.361 * 100).toFixed(2) }}%
+      <div class="results-di">
+        DI: {{ calculateValue() }}% / Max: 10.361%
+      </div>
+      <div class="results-rating">
+        Rating: {{ (calculateValue() / 10.361 * 100).toFixed(2) }}%
+      </div>
+      <div class="results-scrolls">
+        Average scrolls to improve: {{ getScrollsNeeded(calculateValue() / 10.361) }}
+      </div>
+    </div>
+    <div class="rune-table-container">
+      <table class="rune-table"> 
+        <tr><th>Rune</th><th>Name</th><th>Stats</th><th>DI%</th></tr>
+        <tr v-for="rune in runes">
+          <td><img :src="imgUrls[`./assets/Rune${rune['num']}.png`]" alt=""></td>          
+          <td>{{ rune['name'] }}</td>
+          <td>{{ rune['stats'].replace('- ', '').replace('\n- ', ' / ') }}</td>
+          <td>{{ rune['value'].toFixed(5) + '%' }}</td>
+        </tr>
+      </table>
+      <table class="rating-table"> 
+        <tr><th>Rating</th><th>Scrolls needed (Avg)</th></tr>
+        <tr v-for="scroll in scrolls">
+          <td>{{ (scroll[0] * 100).toFixed(2) + '%'}}</td>          
+          <td>{{ scroll[1] }}</td>
+        </tr>
+      </table>
     </div>
   </div>
 

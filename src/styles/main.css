@@ -85,7 +85,7 @@ td {
 }
 
 .results {
-  width: 700px;
+  width: 500px;
   text-align: center;
   margin: 10px;
   margin-bottom: 30px;
@@ -106,6 +106,18 @@ td {
 
 .rating-table {
   padding-left: 150px;
+}
+
+.main {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.insight-selection {
+  width: 500px;
+  text-align: center;
+  margin: 10px;
+  margin-bottom: 30px;
 }
 
 #tooltip {

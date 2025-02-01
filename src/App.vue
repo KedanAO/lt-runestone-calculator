@@ -3,20 +3,13 @@ import runes from './utils/runes.js'
 import scrolls from './utils/scrolls.js'
 
 // todo: 
-// - Make main window (like in-game)
-// --  Make it so you can click to select each rune, adding it to the 8 on top right | DONE
-// -- List effects on bottom right box
-// -- Hover effect on each rune to describe the name + stats
-// --- Separate into header/body to be more similar to in-game
-// --- Change the box to be more similar to the in-game box
-// - Clear button
-// - On the right, make an additional table that lists all runes (also shows if selected and can click) and their values
-// -- Below that, show current value and max potential
-// -- Show table of rating % / rolls / value somewhere
+// - Clear button 
 // - Simulator options
-// -- Button to generate one random set
-// -- Button to roll until a selected % quality
-
+// -- Button to roll until a selected % quality | ?
+// - Insight
+// -- Make it so it displays 0% if it doesn't contain insight
+// --- Add a message that explains why
+// -- Improve Selection button and add explanation
 
 export default {
   data() {
@@ -33,6 +26,7 @@ export default {
         import: 'default',
         eager: true,
       }),
+      mode: 'Normal',
 
       tooltip: false,
       tooltipPosition: [0,0],
@@ -43,6 +37,10 @@ export default {
   methods: {
     calculateValue(){
       let total = 0
+
+      if (this.mode === "Insight" && !this.selectedRunes.includes(20)) {
+        return total.toFixed(3)
+      }
 
       this.selectedRunes.forEach((r) => {
         total += this.runes[r-1]['value']
@@ -80,10 +78,16 @@ export default {
     },
 
     getScrollsNeeded(rating) {
+      const s = scrolls[this.mode]
+
       if (rating >= 1) {
         return 'Maxed!'
       }
-      const n = scrolls[scrolls.indexOf(scrolls.find((s) => s[0] > rating))+1][1]
+      let n = s.indexOf(s.find((sr) => sr[0] > rating))+1
+      if (n >= s.length) {
+        return 'too many'
+      }
+      n = s[s.indexOf(s.find((sr) => sr[0] > rating))+1][1]
       if (n === 'too many') {
         return n
       }
@@ -93,6 +97,15 @@ export default {
     formatRunestoneTooltip(r){
       return '<' + r['name'] + '>\n\n[Runestone of ' + r['name'].toUpperCase() + ']\n\n*Effects*\n' + r['stats'] + '\n\n*Damage Increase*\n- ' + r['value'].toFixed(5) + '%'
     },
+
+    getMaximumValue() {
+      if (this.mode === "Normal") {
+        return 10.361
+      } 
+      else {
+        return 9.647
+      }
+    }, 
 
     toggleRune(r) {
       if (this.runeStates[r]) {
@@ -166,19 +179,34 @@ export default {
       </div>
     </div>
     <button class="button-roll" @click="getRandomRunes()"></button>
-  </div>
-  <div class="side">
-    <div class="results">
-      <div class="results-di">
-        DI: {{ calculateValue() }}% / Max: 10.361%
+    <div class="side">
+      <div class="results">
+        <div class="results-di">
+          DI: {{ calculateValue() }}% / Max: {{ getMaximumValue() }}%
+        </div>
+        <div class="results-rating">
+          Rating: {{ (calculateValue() / getMaximumValue() * 100).toFixed(2) }}% <span v-if="mode === 'Insight' && !selectedRunes.includes(20)"> (No Insight)</span>
+        </div>
+        <div class="results-scrolls">
+          Average scrolls to improve: {{ getScrollsNeeded(calculateValue() / getMaximumValue()) }}
+        </div>
+        <br><br>Please note values are purely theoretical and subject to change with future gear, dungeons and balance patches - if you want to do more detailed tests,
+        please utilize the <a href="https://kedanao.github.io/lt-damage-calculator/">damage calculator</a>.
       </div>
-      <div class="results-rating">
-        Rating: {{ (calculateValue() / 10.361 * 100).toFixed(2) }}%
-      </div>
-      <div class="results-scrolls">
-        Average scrolls to improve: {{ getScrollsNeeded(calculateValue() / 10.361) }}
+      <div class="insight-selection">
+        <h2>Insight</h2>
+        When considering the Insight rune, its actual value cannot be accurately measured as it may change from class to class. However, if you particularly desire to have
+        insight on your rune set no matter what, Insight mode will only consider pages that have Insight in them and thus will have a lower DI ceiling and different
+        ratings/cost to improve upon.<br><br>
+        Mode: 
+        <select v-model="mode" class="insight-mode">
+          <option value="Normal">Normal</option>
+          <option value="Insight">Insight</option>
+        </select>
       </div>
     </div>
+  </div>
+  <div class="bottom">
     <div class="rune-table-container">
       <table class="rune-table"> 
         <tr><th>Rune</th><th>Name</th><th>Stats</th><th>DI%</th></tr>
@@ -191,7 +219,7 @@ export default {
       </table>
       <table class="rating-table"> 
         <tr><th>Rating</th><th>Scrolls needed (Avg)</th></tr>
-        <tr v-for="scroll in scrolls">
+        <tr v-for="scroll in scrolls[mode]">
           <td>{{ (scroll[0] * 100).toFixed(2) + '%'}}</td>          
           <td>{{ scroll[1] }}</td>
         </tr>

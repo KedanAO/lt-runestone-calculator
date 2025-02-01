@@ -196,7 +196,7 @@ export default {
       <div class="insight-selection">
         <h2>Insight</h2>
         When considering the Insight rune, its actual value cannot be accurately measured as it may change from class to class. However, if you particularly desire to have
-        insight on your rune set no matter what, Insight mode will only consider pages that have Insight in them and thus will have a lower DI ceiling and different
+        insight on your rune set no matter what, Insight mode will only consider pages that have Insight in them and thus will have a lower damage increase (DI) ceiling and different
         ratings/cost to improve upon.<br><br>
         Mode: 
         <select v-model="mode" class="insight-mode">

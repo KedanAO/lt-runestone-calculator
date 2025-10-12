@@ -99,11 +99,13 @@ export default {
     },
 
     getMaximumValue() {
+      let r = this.runes.slice().sort((a,b) => b['value'] - a['value'])
       if (this.mode === "Normal") {
-        return 10.361
+        // return 10
+        return (r.slice(0,8).reduce((s, a) => s + a['value'], 0) + r[0]['value']).toFixed(3)
       } 
       else {
-        return 9.647
+        return (r.slice(0,7).reduce((s, a) => s + a['value'], 0) + r[0]['value']).toFixed(3)
       }
     }, 
 

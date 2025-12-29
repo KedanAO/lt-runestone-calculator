@@ -7,8 +7,6 @@ import scrolls from './utils/scrolls.js'
 // - Simulator options
 // -- Button to roll until a selected % quality | ?
 // - Insight
-// -- Make it so it displays 0% if it doesn't contain insight
-// --- Add a message that explains why
 // -- Improve Selection button and add explanation
 
 export default {
@@ -26,7 +24,7 @@ export default {
         import: 'default',
         eager: true,
       }),
-      mode: 'Normal',
+      mode: 'None',
 
       tooltip: false,
       tooltipPosition: [0,0],
@@ -38,9 +36,10 @@ export default {
     calculateValue(){
       let total = 0
 
-      if (this.mode === "Insight" && !this.selectedRunes.includes(20)) {
-        return total.toFixed(3)
-      }
+      // if ( (this.mode === "Single" && !(this.selectedRunes.includes(20))) ||
+      //      (this.mode === "Double" && !(this.selectedRunes.indexOf(20) === 7)) ) {
+      //   return total.toFixed(3)
+      // }
 
       this.selectedRunes.forEach((r) => {
         total += this.runes[r-1]['value']
@@ -51,6 +50,11 @@ export default {
 
       return total.toFixed(3)
     },
+
+    getMaximumValue() {
+      let r = this.runes.slice().sort((a,b) => b['value'] - a['value'])
+      return (r.slice(0,8).reduce((s, a) => s + a['value'], 0) + r[0]['value']).toFixed(3)
+    }, 
 
     getRandomInt(max){
       return Math.floor(Math.random() * max)
@@ -98,16 +102,17 @@ export default {
       return '<' + r['name'] + '>\n\n[Runestone of ' + r['name'].toUpperCase() + ']\n\n*Effects*\n' + r['stats'] + '\n\n*Damage Increase*\n- ' + r['value'].toFixed(5) + '%'
     },
 
-    getMaximumValue() {
-      let r = this.runes.slice().sort((a,b) => b['value'] - a['value'])
-      if (this.mode === "Normal") {
-        // return 10
-        return (r.slice(0,8).reduce((s, a) => s + a['value'], 0) + r[0]['value']).toFixed(3)
-      } 
-      else {
-        return (r.slice(0,7).reduce((s, a) => s + a['value'], 0) + r[0]['value']).toFixed(3)
+    setInsightMode() {
+      if (this.mode === 'None') {
+        this.runes[19]['value'] = 0.0
       }
-    }, 
+      else if (this.mode === 'Single') {
+        this.runes[19]['value'] = 1.0
+      }
+      else {
+        this.runes[19]['value'] = 2.0
+      }
+    },
 
     toggleRune(r) {
       if (this.runeStates[r]) {
@@ -187,7 +192,9 @@ export default {
           DI: {{ calculateValue() }}% / Max: {{ getMaximumValue() }}%
         </div>
         <div class="results-rating">
-          Rating: {{ (calculateValue() / getMaximumValue() * 100).toFixed(2) }}% <span v-if="mode === 'Insight' && !selectedRunes.includes(20)"> (No Insight)</span>
+          Rating: {{ (calculateValue() / getMaximumValue() * 100).toFixed(2) }}%
+          <span v-if="(mode === 'Single' && !(selectedRunes.includes(20)))">(No Insight)</span>
+          <span v-else-if="(mode === 'Double' && !(selectedRunes.indexOf(20) === 7))">(No 2x Insight)</span>
         </div>
         <div class="results-scrolls">
           Average scrolls to improve: {{ getScrollsNeeded(calculateValue() / getMaximumValue()) }}
@@ -197,13 +204,13 @@ export default {
       </div>
       <div class="insight-selection">
         <h2>Insight</h2>
-        When considering the Insight rune, its actual value cannot be accurately measured as it may change from class to class. However, if you particularly desire to have
-        insight on your rune set no matter what, Insight mode will only consider pages that have Insight in them and thus will have a lower damage increase (DI) ceiling and different
-        ratings/cost to improve upon.<br><br>
+        When considering the Insight rune, its actual value cannot be accurately measured as it may change from class to class, and is instead given generic values. 
+        None considers 0%, Single considers 1% and Double considers 2%. To find which setting you should use for your class, please check the <a href="https://docs.google.com/spreadsheets/d/1MfCYueKjViUK7iJOH6KDL-KvTpjOygip0hFOwbUq96w/edit?usp=sharing">Class Factor spreadsheet</a>.<br><br>
         Mode: 
-        <select v-model="mode" class="insight-mode">
-          <option value="Normal">Normal</option>
-          <option value="Insight">Insight</option>
+        <select v-model="mode" @change="setInsightMode" class="insight-mode">
+          <option value="None">None</option>
+          <option value="Single">Single</option>
+          <option value="Double">Double</option>
         </select>
       </div>
     </div>
